@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <script src="https://pixijs.download/release/pixi.min.js"></script>
+    <script src="https://pixijs.download/v6.1.2/pixi.min.js"></script>
   </head>
   <style>
     body {
@@ -11,9 +11,14 @@
     canvas {
       height: 70vh;
     }
+    p {
+      position: absolute;
+      left: 400px;
+    }
   </style>
   <body>
     <!-- <button onclick="shoot();">攻擊</button> -->
+    <p>遊戲解說：上下左右控制飛機方向 S可切換飛機</p>
     <script>
       const app = new PIXI.Application({ width: 560, height: 960 });
       document.body.appendChild(app.view);
@@ -21,7 +26,8 @@
       let currentPlaneIndex = 0; // 當前飛機的索引
       let currentShootMode = "normal"; // 當前射擊模式
 
-      const planeTexture = PIXI.Texture.from("https://placekitten.com/100/100");
+      // 預設飛機
+      const planeTexture = PIXI.Texture.from("plane2.png");
 
       const plane = new PIXI.Sprite(planeTexture);
       plane.width = 40;
@@ -33,21 +39,21 @@
       // 切換飛機
       // 飛機紋理
       const planeTextures = [
-        "https://placekitten.com/100/100",
-        "https://placekitten.com/120/120", // 第二種飛機
+        "plane2.png", // 這邊放預設
+        "planeB.png", // 第二種飛機
       ];
 
       // 添加切換飛機的按鈕
-      const switchPlaneButton = document.createElement("button");
-      switchPlaneButton.textContent = "切換飛機";
-      document.body.appendChild(switchPlaneButton);
+      // const switchPlaneButton = document.createElement("button");
+      // switchPlaneButton.textContent = "切換飛機";
+      // document.body.appendChild(switchPlaneButton);
 
-      switchPlaneButton.addEventListener("click", () => {
-        currentPlaneIndex = (currentPlaneIndex + 1) % planeTextures.length;
-        updatePlaneTexture(plane, currentPlaneIndex);
-        //切換射擊模式
-        currentShootMode = currentShootMode === "normal" ? "special" : "normal";
-      });
+      // switchPlaneButton.addEventListener("click", () => {
+      //   currentPlaneIndex = (currentPlaneIndex + 1) % planeTextures.length;
+      //   updatePlaneTexture(plane, currentPlaneIndex);
+      //   //切換射擊模式
+      //   currentShootMode = currentShootMode === "normal" ? "special" : "normal";
+      // });
 
       // 添加切換射擊模式的按鈕
       // const switchShootModeButton = document.createElement("button");
@@ -87,6 +93,13 @@
       });
       scoreText.position.set(10, 10);
       app.stage.addChild(scoreText);
+
+      //第二種背景
+      let currentBackground =
+        "https://png.pngtree.com/background/20210709/original/pngtree-romantic-starry-background-fantasy-starry-sky-background-starry-material-psd-picture-image_953516.jpg";
+      // 添加背景
+      const background = new PIXI.Sprite.from(currentBackground);
+      // app.stage.addChild(background);
 
       // 暫停
       let isGamePaused = false;
@@ -161,6 +174,16 @@
           if (Math.random() < 0.02) {
             spawnEnemy();
           }
+
+          //切換背景
+          // 檢查分數以切換背景
+          if (score == 100) {
+            // 切換背景
+
+            app.stage.removeChild(background);
+            background.texture = PIXI.Texture.from(currentBackground);
+            app.stage.addChildAt(background, 0); // 放在最底層
+          }
         }
 
         requestAnimationFrame(update);
@@ -196,7 +219,7 @@
         bullet.beginFill(0xffffff);
         bullet.drawRect(0, 0, 155, 50);
         bullet.endFill();
-        bullet.position.set(x -50, y);
+        bullet.position.set(x - 80, y - 80);
 
         return bullet;
       }
@@ -243,6 +266,13 @@
           }
           e.preventDefault();
         }
+        if (e.key === "s" || e.key === "S") {
+          currentPlaneIndex = (currentPlaneIndex + 1) % planeTextures.length;
+          updatePlaneTexture(plane, currentPlaneIndex);
+          //切換射擊模式
+          currentShootMode =
+            currentShootMode === "normal" ? "special" : "normal";
+        }
       });
 
       window.addEventListener("keyup", (e) => {
@@ -250,6 +280,28 @@
       });
 
       update();
+
+      // // 定義飛機動畫的精靈表
+      // const airplaneFrames = [];
+      // for (let i = 0; i < 4; i++) {
+      //   const texture = PIXI.Texture.from(`plane${i}.png`);
+      //   airplaneFrames.push(texture);
+      // }
+
+      // // 創建 AnimatedSprite
+      // const airplane = new PIXI.AnimatedSprite(airplaneFrames);
+
+      // // 設置動畫的速度
+      // airplane.animationSpeed = 0.1;
+
+      // // 開始播放動畫
+      // airplane.play();
+
+      // // 設置飛機的位置
+      // airplane.position.set(100, 100);
+
+      // // 將飛機添加到舞台
+      // app.stage.addChild(airplane);
     </script>
   </body>
 </html>
